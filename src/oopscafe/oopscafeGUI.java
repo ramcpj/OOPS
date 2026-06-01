@@ -311,15 +311,11 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
             .addGroup(panelMenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtsearchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSearch))
-                        .addGap(138, 138, 138))
-                    .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(113, 113, 113)))
-                .addContainerGap(827, Short.MAX_VALUE))
+                    .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtsearchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSearch))
+                    .addComponent(jLabel7))
+                .addContainerGap(965, Short.MAX_VALUE))
         );
 
         scrollMenu.setViewportView(panelMenu);
@@ -357,9 +353,19 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
 
         btnClearOrder.setFont(new java.awt.Font("Segoe UI Symbol", 0, 16)); // NOI18N
         btnClearOrder.setText("🗑 Clear Order");
+        btnClearOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearOrderActionPerformed(evt);
+            }
+        });
 
         btnCheckout.setFont(new java.awt.Font("Segoe UI Symbol", 0, 16)); // NOI18N
         btnCheckout.setText("🛒 Checkout");
+        btnCheckout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCheckoutActionPerformed(evt);
+            }
+        });
 
         lblTotal.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         lblTotal.setText("TOTAL:");
@@ -489,6 +495,7 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
         btnEncap.setEnabled(true);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
+         loadMenu("");
     }//GEN-LAST:event_btnColdActionPerformed
 
     private void btnEncapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncapActionPerformed
@@ -508,6 +515,7 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
         btnEncap.setEnabled(false);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
+        loadMenu("");
     }//GEN-LAST:event_btnHotActionPerformed
 
     private void btnPolyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPolyActionPerformed
@@ -532,7 +540,72 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
         btnEncap.setEnabled(true);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
+         loadMenu(""); 
     }//GEN-LAST:event_btnMilkteaActionPerformed
+
+    private void btnClearOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearOrderActionPerformed
+        // TODO add your handling code here:
+        currentOrder.clearOrder();
+    
+    // 2. Clear the table display
+    tableModel.setRowCount(0);
+    
+    // 3. Reset the total labels
+    txtTotalItems.setText("0");
+    txtTotalAmt.setText("₱0.00");
+    }//GEN-LAST:event_btnClearOrderActionPerformed
+
+    private void btnCheckoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckoutActionPerformed
+        // 1. Validate order is not empty
+    if (currentOrder.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Your order is empty!\nPlease add items before checking out.",
+            "Empty Order",
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // 2. Create Receipt object and generate receipt
+    Receipt receipt = new Receipt(currentOrder);
+    String receiptText = receipt.generateReceipt();
+
+    // 3. Display receipt
+    javax.swing.JTextArea receiptArea = new javax.swing.JTextArea(receiptText);
+    receiptArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 13));
+    receiptArea.setEditable(false);
+    receiptArea.setBackground(new java.awt.Color(255, 255, 240));
+
+    javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(receiptArea);
+    scrollPane.setPreferredSize(new java.awt.Dimension(420, 400));
+
+    Object[] options = {"Print", "Close"};
+    int choice = javax.swing.JOptionPane.showOptionDialog(
+        this,
+        scrollPane,
+        "OOP'S CAFE - Receipt",
+        javax.swing.JOptionPane.DEFAULT_OPTION,
+        javax.swing.JOptionPane.PLAIN_MESSAGE,
+        null,
+        options,
+        options[1]
+    );
+
+    // 4. Print if selected
+    if (choice == 0) {
+        try {
+            receiptArea.print();
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Printing failed: " + ex.getMessage());
+        }
+    }
+
+    // 5. Clear order after checkout
+    currentOrder.clearOrder();
+    tableModel.setRowCount(0);
+    txtTotalItems.setText("0");
+    txtTotalAmt.setText("₱0.00");
+    }//GEN-LAST:event_btnCheckoutActionPerformed
 
     /**
      * @param args the command line arguments
