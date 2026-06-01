@@ -38,7 +38,7 @@ public class Coffee extends Drink {
                     if (size.equals("INHE")) return 110;
                     else if (size.equals("POLY")) return 125;
                     break;
-                case "Caramel MAcchiato":
+                case "Caramel Macchiato":
                     if (size.equals("INHE")) return 125;
                     else if (size.equals("POLY")) return 140;
                     break; 
