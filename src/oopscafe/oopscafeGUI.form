@@ -278,7 +278,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="scrollMenu" min="-2" pref="607" max="-2" attributes="0"/>
+                      <Component id="scrollMenu" min="-2" pref="631" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel4" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -316,7 +316,7 @@
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="180" pref="255" max="32767" attributes="0"/>
+                              <EmptySpace min="180" pref="279" max="32767" attributes="0"/>
                               <Component id="txtsearchfield" min="-2" pref="190" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btnSearch" min="-2" max="-2" attributes="0"/>
@@ -383,7 +383,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jSeparator2" max="32767" attributes="0"/>
-                                      <Component id="jScrollPane2" alignment="0" pref="0" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane2" alignment="0" pref="431" max="32767" attributes="0"/>
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="btnCheckout" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
@@ -418,7 +418,7 @@
                           <Component id="jLabel30" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="jScrollPane2" min="-2" pref="103" max="-2" attributes="0"/>
-                          <EmptySpace pref="31" max="32767" attributes="0"/>
+                          <EmptySpace pref="52" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="lblTotalItems" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtTotalItems" alignment="3" min="-2" max="-2" attributes="0"/>
