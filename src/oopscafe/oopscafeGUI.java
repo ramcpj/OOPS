@@ -205,38 +205,37 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(btnHot)
-                        .addGap(44, 44, 44)
-                        .addComponent(btnCold)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnMilktea)
-                        .addGap(29, 29, 29))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(58, 58, 58)
+                        .addComponent(btnCold))
+                    .addComponent(jLabel2))
+                .addGap(63, 63, 63)
+                .addComponent(btnMilktea)
+                .addGap(69, 69, 69)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(54, 54, 54)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(btnEncap)
-                                .addGap(44, 44, 44)
+                                .addGap(63, 63, 63)
                                 .addComponent(btnInhe)
-                                .addGap(43, 43, 43)
-                                .addComponent(btnPoly)))
-                        .addGap(25, 25, 25))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(58, 58, 58)
+                                .addComponent(btnPoly)
+                                .addGap(31, 31, 31))))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(80, 80, 80)
                         .addComponent(jLabel4)
-                        .addGap(96, 96, 96)
+                        .addGap(103, 103, 103)
                         .addComponent(jLabel5)
-                        .addGap(92, 92, 92)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel6)
-                        .addGap(48, 48, 48))))
+                        .addGap(50, 50, 50))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -273,7 +272,7 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
 
         jPanel2.setBackground(new java.awt.Color(245, 234, 223));
 
-        panelMenu.setPreferredSize(new java.awt.Dimension(567, 1000));
+        panelMenu.setPreferredSize(new java.awt.Dimension(567, 570));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI Symbol", 0, 16)); // NOI18N
         jLabel7.setText("☕ MENU");
@@ -315,7 +314,7 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
                         .addComponent(txtsearchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnSearch))
                     .addComponent(jLabel7))
-                .addContainerGap(965, Short.MAX_VALUE))
+                .addContainerGap(535, Short.MAX_VALUE))
         );
 
         scrollMenu.setViewportView(panelMenu);
@@ -391,7 +390,7 @@ panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator2)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                                 .addComponent(btnCheckout)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -691,7 +690,45 @@ private void addToOrder(String drinkName, String type) {
             javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
-    Coffee drink = new Coffee(drinkName, type, 0, selectedSize, 1);
+
+    
+    Drink drink;
+    if (type.equals("MilkTea")) {
+        drink = new MilkTea(drinkName, 0, selectedSize, 1);
+    } else {
+        drink = new Coffee(drinkName, type, 0, selectedSize, 1);
+    }
+
+    
+    for (int i = 0; i < tableModel.getRowCount(); i++) {
+        String rowItem = (String) tableModel.getValueAt(i, 0);
+        String rowSize = (String) tableModel.getValueAt(i, 1);
+
+        if (rowItem.equals(drinkName) && rowSize.equals(selectedSize)) {
+            
+            int currentQty = (Integer) tableModel.getValueAt(i, 3);
+            int newQty = currentQty + 1;
+            double price = (Double) tableModel.getValueAt(i, 2);
+            double newTotal = price * newQty;
+
+            tableModel.setValueAt(newQty, i, 3);
+            tableModel.setValueAt(newTotal, i, 4);
+
+           
+            currentOrder.addDrink(drink);
+
+            
+            int totalQty = 0;
+            for (int r = 0; r < tableModel.getRowCount(); r++) {
+                totalQty += (Integer) tableModel.getValueAt(r, 3);
+            }
+            txtTotalItems.setText(String.valueOf(totalQty));
+            txtTotalAmt.setText(String.format("₱%.2f", currentOrder.computeTotal()));
+            return;
+        }
+    }
+
+    
     currentOrder.addDrink(drink);
     tableModel.addRow(new Object[]{
         drink.getDrinkName(),
@@ -700,7 +737,13 @@ private void addToOrder(String drinkName, String type) {
         drink.getQuantity(),
         drink.calculateTotal()
     });
-    txtTotalItems.setText(String.valueOf(currentOrder.getOrderList().size()));
+
+    
+    int totalQty = 0;
+    for (int r = 0; r < tableModel.getRowCount(); r++) {
+        totalQty += (Integer) tableModel.getValueAt(r, 3);
+    }
+    txtTotalItems.setText(String.valueOf(totalQty));
     txtTotalAmt.setText(String.format("₱%.2f", currentOrder.computeTotal()));
 }
 
@@ -709,26 +752,41 @@ private void loadMenu(String searchText) {
         {"Americano",         "/images/Hot Americano.png",         "Hot", "₱95.00",  "₱110.00"},
         {"Espresso",          "/images/Hot Espresso.png",          "Hot", "₱100.00", "₱115.00"},
         {"Latte",             "/images/Hot Latte.png",             "Hot", "₱105.00", "₱120.00"},
-        {"Cappuccino",        "/images/Hot Cappuccino.png",        "Hot", "₱110.00", "₱125.00"},
+        {"Cappucino",        "/images/Hot Cappucino.png",        "Hot", "₱110.00", "₱125.00"},
         {"Caramel Macchiato", "/images/Hot Caramel Macchiato.png", "Hot", "₱125.00", "₱140.00"}
     };
 
     String[][] coldDrinks = {
-        {"Iced Americano",         "/images/Iced Americano.jpg",         "Cold", "₱120.00", "₱140.00", "₱160.00"},
-        {"Iced Latte",             "/images/Iced Latte.jpg",             "Cold", "₱130.00", "₱150.00", "₱170.00"},
-        {"Iced Espresso",          "/images/Iced Espresso.jpg",          "Cold", "₱125.00", "₱145.00", "₱165.00"},
-        {"Iced Cappuccino",        "/images/Iced Cappuccino.jpg",        "Cold", "₱135.00", "₱155.00", "₱175.00"},
-        {"Iced Caramel Macchiato", "/images/Iced Caramel Macchiato.jpg", "Cold", "₱145.00", "₱165.00", "₱185.00"}
-    };
+    {"Iced Americano",         "/images/Iced Americano.png",         "Cold", "₱120.00", "₱140.00", "₱160.00"},
+    {"Iced Latte",             "/images/Iced Latte.png",             "Cold", "₱130.00", "₱150.00", "₱170.00"},
+    {"Iced Espresso",          "/images/Iced Espresso.png",          "Cold", "₱125.00", "₱145.00", "₱165.00"},
+    {"Iced Cappucino",        "/images/Iced Cappucino.png",        "Cold", "₱135.00", "₱155.00", "₱175.00"},
+    {"Iced Caramel Macchiato", "/images/Iced Caramel Macchiato.png", "Cold", "₱145.00", "₱165.00", "₱185.00"}
+};
     
+    String[][] milkTeaDrinks = {
+     {"Matcha Milk Tea",      "/images/Matcha MilkTea.png",       "MilkTea", "₱120.00", "₱140.00", "₱160.00"},
+     {"Chocolate Milk Tea",   "/images/Chocolate MilkTea.png",    "MilkTea", "₱125.00", "₱145.00", "₱165.00"},
+     {"Taro Milk Tea",        "/images/Taro MilkTea.png",         "MilkTea", "₱130.00", "₱150.00", "₱170.00"},
+     {"Brown Sugar Milk Tea", "/images/Brown Sugar Milktea.png",  "MilkTea", "₱135.00", "₱155.00", "₱175.00"},
+     {"Strawberry Milk Tea",  "/images/Strawberry MilkTea.png",   "MilkTea", "₱140.00", "₱160.00", "₱180.00"}
+ };
+
     String[][] allDrinks;
     boolean isCold;
+    boolean isMilkTea;
     if (selectedCategory.equals("Cold")) {
         allDrinks = coldDrinks;
         isCold = true;
+        isMilkTea = false;
+    } else if (selectedCategory.equals("MilkTea")) {
+        allDrinks = milkTeaDrinks;
+        isCold = false;
+        isMilkTea = true;
     } else {
         allDrinks = hotDrinks;
         isCold = false;
+        isMilkTea = false;
     }
 
     java.util.List<String[]> matches = new java.util.ArrayList<>();
@@ -763,12 +821,12 @@ private void loadMenu(String searchText) {
         spacer.setPreferredSize(new java.awt.Dimension(230, 25));
         headerRow.add(spacer);
 
-        if (isCold) {
-            javax.swing.JLabel encapHeader = new javax.swing.JLabel("ENCAP");
-            encapHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
-            encapHeader.setPreferredSize(new java.awt.Dimension(80, 25));
-            headerRow.add(encapHeader);
-        }
+        if (isCold || isMilkTea) {
+    javax.swing.JLabel encapHeader = new javax.swing.JLabel("ENCAP");
+    encapHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
+    encapHeader.setPreferredSize(new java.awt.Dimension(80, 25));
+    headerRow.add(encapHeader);
+}
         javax.swing.JLabel inheHeader = new javax.swing.JLabel("INHE");
         inheHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
         inheHeader.setPreferredSize(new java.awt.Dimension(80, 25));
@@ -810,7 +868,7 @@ private void loadMenu(String searchText) {
             row.add(imgLabel);
             row.add(nameLabel);
 
-            if (isCold) {
+           if (isCold || isMilkTea) {
                 // ENCAP price
                 javax.swing.JLabel encapPrice = new javax.swing.JLabel(data[3]);
                 encapPrice.setFont(new java.awt.Font("Times New Roman", 0, 16));

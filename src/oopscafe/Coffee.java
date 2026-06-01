@@ -34,7 +34,7 @@ public class Coffee extends Drink {
                     if (size.equals("INHE")) return 100;
                     else if (size.equals("POLY")) return 115;
                     break;
-                case "Cappuccino":
+                case "Cappucino":
                     if (size.equals("INHE")) return 110;
                     else if (size.equals("POLY")) return 125;
                     break;
@@ -61,7 +61,7 @@ public class Coffee extends Drink {
                     else if (size.equals("INHE")) return 145;
                     else if (size.equals("POLY")) return 165;
                     break;
-                case "Iced Cappuccino":
+                case "Iced Cappucino":
                     if (size.equals("ENCAP")) return 135;
                     else if (size.equals("INHE")) return 155;
                     else if (size.equals("POLY")) return 175;
