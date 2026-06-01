@@ -17,18 +17,76 @@ public class oopscafeGUI extends javax.swing.JFrame {
      * Creates new form oopscafeGUI
      */
     
-    private Order currentOrder = new Order ("Customer", 1);
-    private String selectedCategory = "Hot"; 
-    private String selectedSize = "INHE";
+    private Order currentOrder = new Order("Customer", 1);
+    private String selectedCategory = "Hot";
+    private String selectedSize = null;
     private DefaultTableModel tableModel;
+    private javax.swing.JPanel menuContentPanel = new javax.swing.JPanel();
     
     public oopscafeGUI() {
-        initComponents();
-        setupTable();
-        txtTotalItems.setText("0");
-        txtTotalAmt.setText("₱0.00");
-        btnEncap.setEnabled(false);
-    }
+    initComponents();
+    setupTable();
+    txtTotalItems.setText("0");
+    txtTotalAmt.setText("₱0.00");
+    btnEncap.setEnabled(false);
+
+    // Set up panelMenu with fixed top bar and scrollable content below
+    panelMenu.setLayout(new java.awt.BorderLayout());
+
+    // Top bar - created ONCE, never removed
+    javax.swing.JPanel topBar = new javax.swing.JPanel(
+    new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+topBar.setBackground(panelMenu.getBackground());
+topBar.setPreferredSize(new java.awt.Dimension(Integer.MAX_VALUE, 40));
+topBar.setMinimumSize(new java.awt.Dimension(0, 40));
+topBar.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 40));
+txtsearchfield.setPreferredSize(new java.awt.Dimension(350, 30)); // ← longer
+txtsearchfield.setMinimumSize(new java.awt.Dimension(350, 30));   // ← steady
+txtsearchfield.setMaximumSize(new java.awt.Dimension(350, 30));   // ← steady
+topBar.add(jLabel7);
+topBar.add(txtsearchfield);
+topBar.add(btnSearch);
+panelMenu.add(topBar, java.awt.BorderLayout.NORTH);
+
+    // Content panel - this is what gets rebuilt on search
+    menuContentPanel.setLayout(new javax.swing.BoxLayout(
+        menuContentPanel, javax.swing.BoxLayout.Y_AXIS));
+    menuContentPanel.setBackground(panelMenu.getBackground());
+    panelMenu.add(menuContentPanel, java.awt.BorderLayout.CENTER);
+
+    loadMenu("");
+
+    txtsearchfield.addFocusListener(new java.awt.event.FocusAdapter() {
+        @Override
+        public void focusGained(java.awt.event.FocusEvent evt) {
+            if (txtsearchfield.getText().equals("Search Drink")) {
+                txtsearchfield.setText("");
+            }
+        }
+        @Override
+        public void focusLost(java.awt.event.FocusEvent evt) {
+            if (txtsearchfield.getText().isEmpty()) {
+                txtsearchfield.setText("Search Drink");
+            }
+        }
+    });
+
+    txtsearchfield.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        @Override
+        public void insertUpdate(javax.swing.event.DocumentEvent e) {
+            filterMenu(txtsearchfield.getText());
+        }
+        @Override
+        public void removeUpdate(javax.swing.event.DocumentEvent e) {
+            filterMenu(txtsearchfield.getText());
+        }
+        @Override
+        public void changedUpdate(javax.swing.event.DocumentEvent e) {
+            filterMenu(txtsearchfield.getText());
+        }
+    });
+}
+                
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,35 +116,8 @@ public class oopscafeGUI extends javax.swing.JFrame {
         scrollMenu = new javax.swing.JScrollPane();
         panelMenu = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtsearchfield = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        btnAmericanp = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        btnEspresso = new javax.swing.JButton();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        btnLatte = new javax.swing.JButton();
-        btnCappuccino = new javax.swing.JButton();
-        btnCaramelMacchiato = new javax.swing.JButton();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
-        jLabel27 = new javax.swing.JLabel();
-        jLabel28 = new javax.swing.JLabel();
-        jLabel29 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblOrder = new javax.swing.JTable();
@@ -247,10 +278,10 @@ public class oopscafeGUI extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Segoe UI Symbol", 0, 16)); // NOI18N
         jLabel7.setText("☕ MENU");
 
-        jTextField1.setText("Search Drink");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtsearchfield.setText("Search Drink");
+        txtsearchfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtsearchfieldActionPerformed(evt);
             }
         });
 
@@ -262,264 +293,33 @@ public class oopscafeGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/oopscafe/Hot Americano.png"))); // NOI18N
-
-        jLabel9.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel9.setText("₱ 95.00");
-
-        jLabel10.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel10.setText("Americano");
-
-        btnAmericanp.setBackground(new java.awt.Color(153, 0, 0));
-        btnAmericanp.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnAmericanp.setText("ADD");
-        btnAmericanp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAmericanpActionPerformed(evt);
-            }
-        });
-
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/oopscafe/Hot Latte.png"))); // NOI18N
-
-        jLabel13.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel13.setText("INHE");
-
-        jLabel14.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel14.setText("POLY");
-
-        jLabel15.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel15.setText("₱ 110.00");
-
-        btnEspresso.setBackground(new java.awt.Color(153, 0, 0));
-        btnEspresso.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnEspresso.setText("ADD");
-        btnEspresso.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEspressoActionPerformed(evt);
-            }
-        });
-
-        jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/oopscafe/Hot Caramel Macchiato.png"))); // NOI18N
-
-        jLabel19.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel19.setText("Caramel Macchiato");
-
-        jLabel21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/oopscafe/Hot Espresso.png"))); // NOI18N
-
-        jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/oopscafe/Hot Cappuccino.png"))); // NOI18N
-
-        btnLatte.setBackground(new java.awt.Color(153, 0, 0));
-        btnLatte.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnLatte.setText("ADD");
-        btnLatte.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLatteActionPerformed(evt);
-            }
-        });
-
-        btnCappuccino.setBackground(new java.awt.Color(153, 0, 0));
-        btnCappuccino.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnCappuccino.setText("ADD");
-        btnCappuccino.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCappuccinoActionPerformed(evt);
-            }
-        });
-
-        btnCaramelMacchiato.setBackground(new java.awt.Color(153, 0, 0));
-        btnCaramelMacchiato.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnCaramelMacchiato.setText("ADD");
-        btnCaramelMacchiato.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCaramelMacchiatoActionPerformed(evt);
-            }
-        });
-
-        jLabel12.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel12.setText("Espresso");
-
-        jLabel16.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel16.setText("Latte");
-
-        jLabel17.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel17.setText("Cappucino");
-
-        jLabel23.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel23.setText("₱100.00");
-
-        jLabel24.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel24.setText("₱115.00");
-
-        jLabel25.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel25.setText("₱105.00");
-
-        jLabel26.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel26.setText("₱120.00");
-
-        jLabel27.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel27.setText("₱110.00");
-
-        jLabel28.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel28.setText("₱125.00");
-
-        jLabel29.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel29.setText("₱125.00");
-
-        jLabel20.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
-        jLabel20.setText("₱140.00");
-
         javax.swing.GroupLayout panelMenuLayout = new javax.swing.GroupLayout(panelMenu);
         panelMenu.setLayout(panelMenuLayout);
         panelMenuLayout.setHorizontalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMenuLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel16))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel22)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel17)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addGap(9, 9, 9)
-                                .addComponent(jLabel18)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel19))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel21)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel12))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel10)))
-                        .addGap(32, 32, 32)
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(panelMenuLayout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnSearch))
-                                    .addGroup(panelMenuLayout.createSequentialGroup()
-                                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel13)
-                                            .addComponent(jLabel25)
-                                            .addComponent(jLabel27)
-                                            .addComponent(jLabel29)
-                                            .addComponent(jLabel9))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
-                                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                                .addComponent(jLabel20)
-                                                .addGap(56, 56, 56)
-                                                .addComponent(btnCaramelMacchiato))
-                                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                                .addComponent(jLabel28)
-                                                .addGap(56, 56, 56)
-                                                .addComponent(btnCappuccino))
-                                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                                .addComponent(jLabel26)
-                                                .addGap(56, 56, 56)
-                                                .addComponent(btnLatte))
-                                            .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(jLabel14)
-                                                .addGroup(panelMenuLayout.createSequentialGroup()
-                                                    .addComponent(jLabel15)
-                                                    .addGap(52, 52, 52)
-                                                    .addComponent(btnAmericanp))
-                                                .addGroup(panelMenuLayout.createSequentialGroup()
-                                                    .addComponent(jLabel24)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(btnEspresso))))))
-                                .addGap(46, 46, 46))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel23)
-                                .addGap(0, 0, Short.MAX_VALUE))))))
+                .addComponent(jLabel7)
+                .addGap(180, 255, Short.MAX_VALUE)
+                .addComponent(txtsearchfield, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSearch)
+                .addGap(46, 46, 46))
         );
         panelMenuLayout.setVerticalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
                     .addGroup(panelMenuLayout.createSequentialGroup()
                         .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtsearchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnSearch))
-                        .addGap(29, 29, 29)
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel14)
-                                    .addComponent(jLabel13))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel15)
-                                    .addComponent(btnAmericanp)
-                                    .addComponent(jLabel9)
-                                    .addComponent(jLabel10))
-                                .addGap(25, 25, 25)))))
-                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(138, 138, 138))
                     .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                                .addComponent(jLabel21)
-                                .addGap(60, 60, 60))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addGap(65, 65, 65)
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel12)
-                                    .addComponent(jLabel23)
-                                    .addComponent(jLabel24)
-                                    .addComponent(btnEspresso))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addComponent(jLabel11)
-                        .addGap(58, 58, 58)
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel17)
-                                    .addComponent(jLabel27)
-                                    .addComponent(jLabel28)
-                                    .addComponent(btnCappuccino)))
-                            .addGroup(panelMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel22)
-                                .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelMenuLayout.createSequentialGroup()
-                                        .addGap(43, 43, 43)
-                                        .addComponent(jLabel18)
-                                        .addGap(141, 141, 141))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMenuLayout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel19)
-                                            .addComponent(btnCaramelMacchiato)
-                                            .addComponent(jLabel29)
-                                            .addComponent(jLabel20))
-                                        .addGap(161, 161, 161)))))
-                        .addContainerGap(173, Short.MAX_VALUE))
-                    .addGroup(panelMenuLayout.createSequentialGroup()
-                        .addGap(210, 210, 210)
-                        .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnLatte)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel25)
-                            .addComponent(jLabel26))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jLabel7)
+                        .addGap(113, 113, 113)))
+                .addContainerGap(827, Short.MAX_VALUE))
         );
 
         scrollMenu.setViewportView(panelMenu);
@@ -685,7 +485,7 @@ public class oopscafeGUI extends javax.swing.JFrame {
     private void btnColdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColdActionPerformed
         // TODO add your handling code here:
         selectedCategory = "Cold";
-        selectedSize = "ENCAP";
+        selectedSize = null;
         btnEncap.setEnabled(true);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
@@ -704,7 +504,7 @@ public class oopscafeGUI extends javax.swing.JFrame {
     private void btnHotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHotActionPerformed
         // TODO add your handling code here:
         selectedCategory = "Hot";
-        selectedSize = "INHE";
+        selectedSize = null;
         btnEncap.setEnabled(false);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
@@ -715,47 +515,24 @@ public class oopscafeGUI extends javax.swing.JFrame {
         selectedSize = "POLY";
     }//GEN-LAST:event_btnPolyActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtsearchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchfieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+        filterMenu(txtsearchfield.getText());
+    }//GEN-LAST:event_txtsearchfieldActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
+        filterMenu(txtsearchfield.getText());
     }//GEN-LAST:event_btnSearchActionPerformed
-
-    private void btnEspressoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEspressoActionPerformed
-        // TODO add your handling code here:
-        addToOrder("Espresso", "Hot");
-    }//GEN-LAST:event_btnEspressoActionPerformed
 
     private void btnMilkteaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMilkteaActionPerformed
         // TODO add your handling code here:
         selectedCategory = "MilkTea";
-        selectedSize = ("ENCAP");
-        btnInhe.setEnabled(true);
+        selectedSize = null;
+        btnEncap.setEnabled(true);
         btnInhe.setEnabled(true);
         btnPoly.setEnabled(true);
     }//GEN-LAST:event_btnMilkteaActionPerformed
-
-    private void btnAmericanpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAmericanpActionPerformed
-        // TODO add your handling code here:
-        addToOrder("Americano", "Hot");
-    }//GEN-LAST:event_btnAmericanpActionPerformed
-
-    private void btnLatteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLatteActionPerformed
-        // TODO add your handling code here:
-        addToOrder("Latte", "Hot");
-    }//GEN-LAST:event_btnLatteActionPerformed
-
-    private void btnCappuccinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCappuccinoActionPerformed
-        // TODO add your handling code here:
-        addToOrder("Cappuccino", "Hot");
-    }//GEN-LAST:event_btnCappuccinoActionPerformed
-
-    private void btnCaramelMacchiatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCaramelMacchiatoActionPerformed
-        // TODO add your handling code here:
-        addToOrder("Caramel Macchiato", "Hot");
-    }//GEN-LAST:event_btnCaramelMacchiatoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -794,50 +571,23 @@ public class oopscafeGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAmericanp;
-    private javax.swing.JButton btnCappuccino;
-    private javax.swing.JButton btnCaramelMacchiato;
     private javax.swing.JButton btnCheckout;
     private javax.swing.JButton btnClearOrder;
     private javax.swing.JButton btnCold;
     private javax.swing.JButton btnEncap;
-    private javax.swing.JButton btnEspresso;
     private javax.swing.JButton btnHot;
     private javax.swing.JButton btnInhe;
-    private javax.swing.JButton btnLatte;
     private javax.swing.JButton btnMilktea;
     private javax.swing.JButton btnPoly;
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -845,7 +595,6 @@ public class oopscafeGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblTotal;
     private javax.swing.JLabel lblTotalItems;
     private javax.swing.JPanel panelMenu;
@@ -853,24 +602,198 @@ public class oopscafeGUI extends javax.swing.JFrame {
     private javax.swing.JTable tblOrder;
     private javax.swing.JLabel txtTotalAmt;
     private javax.swing.JLabel txtTotalItems;
+    private javax.swing.JTextField txtsearchfield;
     // End of variables declaration//GEN-END:variables
 
     private void setupTable() {
     tableModel = (DefaultTableModel) tblOrder.getModel();
     tableModel.setRowCount(0);
 }
-    private void addToOrder(String drinkName, String type) {
+
+private void addToOrder(String drinkName, String type) {
+    if (selectedSize == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Please select a size first!",
+            "No Size Selected",
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
     Coffee drink = new Coffee(drinkName, type, 0, selectedSize, 1);
     currentOrder.addDrink(drink);
     tableModel.addRow(new Object[]{
-        drink.getDrinkName(),          // String ✅
-        drink.getSize(),               // String ✅
-        drink.getPrice(),              // Double ✅ (no format)
-        drink.getQuantity(),           // Integer ✅ (no format)
-        drink.calculateTotal()         // Double ✅ (no format)
+        drink.getDrinkName(),
+        drink.getSize(),
+        drink.getPrice(),
+        drink.getQuantity(),
+        drink.calculateTotal()
     });
     txtTotalItems.setText(String.valueOf(currentOrder.getOrderList().size()));
     txtTotalAmt.setText(String.format("₱%.2f", currentOrder.computeTotal()));
+}
+
+private void loadMenu(String searchText) {
+    String[][] hotDrinks = {
+        {"Americano",         "/images/Hot Americano.png",         "Hot", "₱95.00",  "₱110.00"},
+        {"Espresso",          "/images/Hot Espresso.png",          "Hot", "₱100.00", "₱115.00"},
+        {"Latte",             "/images/Hot Latte.png",             "Hot", "₱105.00", "₱120.00"},
+        {"Cappuccino",        "/images/Hot Cappuccino.png",        "Hot", "₱110.00", "₱125.00"},
+        {"Caramel Macchiato", "/images/Hot Caramel Macchiato.png", "Hot", "₱125.00", "₱140.00"}
+    };
+
+    String[][] coldDrinks = {
+        {"Iced Americano",         "/images/Iced Americano.jpg",         "Cold", "₱120.00", "₱140.00", "₱160.00"},
+        {"Iced Latte",             "/images/Iced Latte.jpg",             "Cold", "₱130.00", "₱150.00", "₱170.00"},
+        {"Iced Espresso",          "/images/Iced Espresso.jpg",          "Cold", "₱125.00", "₱145.00", "₱165.00"},
+        {"Iced Cappuccino",        "/images/Iced Cappuccino.jpg",        "Cold", "₱135.00", "₱155.00", "₱175.00"},
+        {"Iced Caramel Macchiato", "/images/Iced Caramel Macchiato.jpg", "Cold", "₱145.00", "₱165.00", "₱185.00"}
+    };
+    
+    String[][] allDrinks;
+    boolean isCold;
+    if (selectedCategory.equals("Cold")) {
+        allDrinks = coldDrinks;
+        isCold = true;
+    } else {
+        allDrinks = hotDrinks;
+        isCold = false;
+    }
+
+    java.util.List<String[]> matches = new java.util.ArrayList<>();
+    for (String[] drink : allDrinks) {
+        if (searchText.isEmpty() || drink[0].toLowerCase().contains(searchText)) {
+            matches.add(drink);
+        }
+    }
+
+
+
+    // Clear and rebuild panelMenu
+    menuContentPanel.removeAll();
+    
+    // Top bar with MENU label, search field and button
+
+     if (matches.isEmpty()) {
+        javax.swing.JLabel noResult = new javax.swing.JLabel("No drinks found.");
+        noResult.setFont(new java.awt.Font("Times New Roman", 0, 16));
+        noResult.setForeground(java.awt.Color.GRAY);
+        noResult.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 0, 0));
+        noResult.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+        menuContentPanel.add(noResult);
+    } else {
+        // Header row — Cold has 3 sizes, Hot has 2
+        javax.swing.JPanel headerRow = new javax.swing.JPanel(
+            new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+        headerRow.setBackground(panelMenu.getBackground());
+        headerRow.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+        headerRow.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 30));
+        javax.swing.JLabel spacer = new javax.swing.JLabel();
+        spacer.setPreferredSize(new java.awt.Dimension(230, 25));
+        headerRow.add(spacer);
+
+        if (isCold) {
+            javax.swing.JLabel encapHeader = new javax.swing.JLabel("ENCAP");
+            encapHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
+            encapHeader.setPreferredSize(new java.awt.Dimension(80, 25));
+            headerRow.add(encapHeader);
+        }
+        javax.swing.JLabel inheHeader = new javax.swing.JLabel("INHE");
+        inheHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
+        inheHeader.setPreferredSize(new java.awt.Dimension(80, 25));
+        javax.swing.JLabel polyHeader = new javax.swing.JLabel("POLY");
+        polyHeader.setFont(new java.awt.Font("Times New Roman", 0, 16));
+        polyHeader.setPreferredSize(new java.awt.Dimension(80, 25));
+        headerRow.add(inheHeader);
+        headerRow.add(polyHeader);
+        menuContentPanel.add(headerRow);
+
+        // Drink rows
+        for (String[] data : matches) {
+            javax.swing.JPanel row = new javax.swing.JPanel(
+                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+            row.setBackground(panelMenu.getBackground());
+            row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            row.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 80));
+
+            // Image
+            javax.swing.JLabel imgLabel = new javax.swing.JLabel();
+            try {
+                java.net.URL imgURL = getClass().getResource(data[1]);
+                if (imgURL != null) {
+                    javax.swing.ImageIcon icon = new javax.swing.ImageIcon(imgURL);
+                    java.awt.Image img = icon.getImage().getScaledInstance(
+                        60, 60, java.awt.Image.SCALE_SMOOTH);
+                    imgLabel.setIcon(new javax.swing.ImageIcon(img));
+                }
+            } catch (Exception ex) {
+                System.out.println("Image not found: " + data[0]);
+            }
+            imgLabel.setPreferredSize(new java.awt.Dimension(65, 65));
+
+            // Name
+            javax.swing.JLabel nameLabel = new javax.swing.JLabel(data[0]);
+            nameLabel.setFont(new java.awt.Font("Times New Roman", 0, 16));
+            nameLabel.setPreferredSize(new java.awt.Dimension(160, 25));
+
+            row.add(imgLabel);
+            row.add(nameLabel);
+
+            if (isCold) {
+                // ENCAP price
+                javax.swing.JLabel encapPrice = new javax.swing.JLabel(data[3]);
+                encapPrice.setFont(new java.awt.Font("Times New Roman", 0, 16));
+                encapPrice.setPreferredSize(new java.awt.Dimension(80, 25));
+                row.add(encapPrice);
+
+                // INHE price
+                javax.swing.JLabel inhePrice = new javax.swing.JLabel(data[4]);
+                inhePrice.setFont(new java.awt.Font("Times New Roman", 0, 16));
+                inhePrice.setPreferredSize(new java.awt.Dimension(80, 25));
+                row.add(inhePrice);
+
+                // POLY price
+                javax.swing.JLabel polyPrice = new javax.swing.JLabel(data[5]);
+                polyPrice.setFont(new java.awt.Font("Times New Roman", 0, 16));
+                polyPrice.setPreferredSize(new java.awt.Dimension(80, 25));
+                row.add(polyPrice);
+            } else {
+                // INHE price
+                javax.swing.JLabel inhePrice = new javax.swing.JLabel(data[3]);
+                inhePrice.setFont(new java.awt.Font("Times New Roman", 0, 16));
+                inhePrice.setPreferredSize(new java.awt.Dimension(80, 25));
+                row.add(inhePrice);
+
+                // POLY price
+                javax.swing.JLabel polyPrice = new javax.swing.JLabel(data[4]);
+                polyPrice.setFont(new java.awt.Font("Times New Roman", 0, 16));
+                polyPrice.setPreferredSize(new java.awt.Dimension(80, 25));
+                row.add(polyPrice);
+            }
+
+            // ADD button
+            javax.swing.JButton addBtn = new javax.swing.JButton("ADD");
+            addBtn.setBackground(new java.awt.Color(153, 0, 0));
+            addBtn.setForeground(java.awt.Color.WHITE);
+            addBtn.setFont(new java.awt.Font("Tahoma", 1, 16));
+            String finalName = data[0];
+            String finalType = data[2];
+            addBtn.addActionListener(e -> addToOrder(finalName, finalType));
+
+            row.add(addBtn);
+            menuContentPanel.add(row);
+        }
+    }
+
+    menuContentPanel.revalidate();
+    menuContentPanel.repaint();
+    javax.swing.SwingUtilities.invokeLater(() -> {
+        scrollMenu.getVerticalScrollBar().setValue(0);
+    });
+}
+
+private void filterMenu(String text) {
+    String searchText = text.trim().toLowerCase();
+    boolean showAll = searchText.equals("search drink") || searchText.isEmpty();
+    loadMenu(showAll ? "" : searchText);
 }
 }
     
